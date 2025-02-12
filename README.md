@@ -38,10 +38,32 @@ shorturl.domain.prefix=http://yourdomain.com
 ## REST API Endpoints
 
 - `POST /sol/url`: Create a short URL
-- `GET /sol/{shortUrl}`: Retrieve the original URL
-- `GET /sol/redirect/{shortUrl}`: Redirect to the original URL
-- `POST /sol/redirect`: Redirect to the original URL using a POST request with the short URL in the body
+    - **Request Body:**
+      ```json
+      {
+        "originalUrl": "http://example.com",
+        "username": "user123",
+        "thirdPartyUserId": "tpUser123",
+        "userAgent": "Mozilla/5.0",
+        "loginMethod": "OAuth"
+      }
+      ```
 
+- `POST /sol/original-url`: Retrieve the original URL using a POST request with the short URL in the body
+    - **Request Body:**
+      ```json
+      {
+        "shortUrl": "http://short.url/abc123"
+      }
+      ```
+
+- `POST /sol/redirect`: Redirect to the original URL using a POST request with the short URL in the body
+    - **Request Body:**
+      ```json
+      {
+        "shortUrl": "http://short.url/abc123"
+      }
+      ```
 ## Unit Tests
 
 Unit tests are provided to verify the implementation. The tests use `originUrl.json` and `result.csv` files, which can be generated using the `DemoApplicationTest` class.
