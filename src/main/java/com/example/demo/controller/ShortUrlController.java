@@ -32,8 +32,8 @@ package com.example.demo.controller;
          */
         @GetMapping("/{shortUrl}")
         public ResponseEntity<String> getOriginalUrl(@PathVariable String shortUrl) {
-            return shortUrlService.getOriginalUrl(shortUrl)
-                    .map(url -> ResponseEntity.ok(url.getOriginalUrl()))
+            return shortUrlService.redirectUrl(shortUrl)
+                    .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         }
 
@@ -44,6 +44,13 @@ package com.example.demo.controller;
          */
         @GetMapping("/redirect/{shortUrl}")
         public ResponseEntity<Object> redirectUrl(@PathVariable String shortUrl) {
+            return shortUrlService.redirectUrl(shortUrl)
+                    .map(url -> ResponseEntity.status(302).header("Location", url).build())
+                    .orElse(ResponseEntity.notFound().build());
+        }
+
+        @PostMapping("/redirect")
+        public ResponseEntity<Object> redirectUrlPost(@RequestBody String shortUrl) {
             return shortUrlService.redirectUrl(shortUrl)
                     .map(url -> ResponseEntity.status(302).header("Location", url).build())
                     .orElse(ResponseEntity.notFound().build());
