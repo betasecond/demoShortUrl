@@ -7,10 +7,10 @@
 ## 功能
 
 - 用于生成短链接的REST API
-- 使用`HashMap`进行内存存储
+- 使用`H2`进行内存存储
 - 确保正确性的单元测试
 - 在`application.properties`中配置域名前缀
-- 未来计划集成H2SQL进行数据存储
+
 
 ## 项目结构
 
@@ -41,14 +41,14 @@ shorturl.domain.prefix=http://yourdomain.com
 - `POST /sol/url`：创建短链接
 - `GET /sol/{shortUrl}`：检索原始链接
 - `GET /sol/redirect/{shortUrl}`：重定向到原始链接
-
+- `POST /sol/redirect`：使用POST请求重定向到原始链接，短链接在请求体中
 ## 单元测试
 
 提供了单元测试来验证实现。测试使用`originUrl.json`和`result.csv`文件，这些文件可以使用`DemoApplicationTest`类生成。
 
 ## 未来计划
 
-- 集成H2SQL进行数据存储
+- 进一步的增强和优化
 
 ## 任务列表
 
@@ -56,7 +56,7 @@ shorturl.domain.prefix=http://yourdomain.com
 - [x] 实现REST API
 - [x] 添加单元测试
 - [x] 在`application.properties`中配置域名前缀
-- [ ] 集成H2SQL进行数据存储
+- [x] 集成H2SQL进行数据存储
 
 ## 运行应用程序
 

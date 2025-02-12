@@ -6,7 +6,7 @@ This project is a proof-of-concept demo for a short URL generation system. It in
 ## Features
 
 - REST API for generating short URLs
-- In-memory storage using `HashMap`
+- In-memory storage using `H2`
 - Unit tests to ensure correctness
 - Configuration for domain prefix in `application.properties`
 - Future plan to integrate H2SQL for data storage
@@ -40,6 +40,7 @@ shorturl.domain.prefix=http://yourdomain.com
 - `POST /sol/url`: Create a short URL
 - `GET /sol/{shortUrl}`: Retrieve the original URL
 - `GET /sol/redirect/{shortUrl}`: Redirect to the original URL
+- `POST /sol/redirect`: Redirect to the original URL using a POST request with the short URL in the body
 
 ## Unit Tests
 
@@ -47,7 +48,7 @@ Unit tests are provided to verify the implementation. The tests use `originUrl.j
 
 ## Future Plans
 
-- Integrate H2SQL for data storage
+- Further enhancements and optimizations
 
 ## Task List
 
@@ -55,7 +56,7 @@ Unit tests are provided to verify the implementation. The tests use `originUrl.j
 - [x] Implement REST API
 - [x] Add unit tests
 - [x] Configure domain prefix in `application.properties`
-- [ ] Integrate H2SQL for data storage
+- [x] Integrate H2SQL for data storage
 
 ## Running the Application
 

@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.model.ShortUrl;
+import com.example.demo.model.ShortUrlDTO;
 import com.example.demo.model.ShortUrlVO;
+import com.example.demo.repository.ShortUrlRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,16 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class ShortUrlService {
-    private final Map<String, ShortUrl> urlMap = new HashMap<>();
+    private final ShortUrlRepository shortUrlRepository;
 
     @Value("${shorturl.domain.prefix}")
     private String domain;
 
     private static final String BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    public ShortUrlService(ShortUrlRepository shortUrlRepository) {
+        this.shortUrlRepository = shortUrlRepository;
+    }
 
     /**
      * 创建短链接
@@ -30,15 +36,22 @@ public class ShortUrlService {
      */
     public ShortUrl createShortUrl(ShortUrlVO shortUrlVO) {
         String shortUrl = generateShortUrl(shortUrlVO.getOriginalUrl());
-        ShortUrl shortUrlObj = new ShortUrl();
+        ShortUrlDTO shortUrlObj = new ShortUrlDTO();
         shortUrlObj.setOriginalUrl(shortUrlVO.getOriginalUrl());
-        shortUrlObj.setShortUrl(domain + "/sol/" + shortUrl);
+        shortUrlObj.setShortUrl(shortUrl);
         shortUrlObj.setUsername(shortUrlVO.getUsername());
         shortUrlObj.setThirdPartyUserId(shortUrlVO.getThirdPartyUserId());
         shortUrlObj.setUserAgent(shortUrlVO.getUserAgent());
         shortUrlObj.setLoginMethod(shortUrlVO.getLoginMethod());
-        urlMap.put(shortUrl, shortUrlObj);
-        return shortUrlObj;
+        shortUrlRepository.save(shortUrlObj);
+        return ShortUrl.builder()
+                .originalUrl(shortUrlVO.getOriginalUrl())
+                .shortUrl(domain + "/sol/" + shortUrl)
+                .username(shortUrlVO.getUsername())
+                .thirdPartyUserId(shortUrlVO.getThirdPartyUserId())
+                .userAgent(shortUrlVO.getUserAgent())
+                .loginMethod(shortUrlVO.getLoginMethod()).
+                build();
     }
 
     /**
@@ -52,7 +65,7 @@ public class ShortUrlService {
         int extension = 0;
 
         // 检查哈希值是否碰撞
-        while (urlMap.containsKey(shortUrl)) {
+        while (shortUrlRepository.findByShortUrl(shortUrl).isPresent()) {
             extension++;
             shortUrl = base62Encode(hash + extension);
         }
@@ -67,9 +80,7 @@ public class ShortUrlService {
      */
     public Optional<String> redirectUrl(String shortUrl) {
         shortUrl = shortUrl.replace(domain + "/sol/", "");
-        ShortUrl shortUrlObj = urlMap.get(shortUrl);
-        log.debug("shortUrlObj: {}", shortUrlObj);
-        return Optional.ofNullable(shortUrlObj).map(ShortUrl::getOriginalUrl);
+        return shortUrlRepository.findByShortUrl(shortUrl).map(ShortUrlDTO::getOriginalUrl);
     }
 
     /**
@@ -106,32 +117,8 @@ public class ShortUrlService {
         return encoded.reverse().toString();
     }
 
-    /**
-     * 根据短链接获取原始长链接
-     * @param shortUrl 短链接
-     * @return 原始长链接
-     */
-    public Optional<ShortUrl> getOriginalUrl(String shortUrl) {
-        return Optional.ofNullable(urlMap.get(shortUrl));
-    }
 
-    /**
-     * 清空短链接映射
-     */
-    public void clearUrlMap() {
-        urlMap.clear();
-    }
 
-    /**
-     * 加载短链接映射
-     * @param csvData 短链接映射数据
-     */
-    public void loadUrlMap(Map<String, String> csvData) {
-        csvData.forEach((originUrl, shortUrl) -> {
-            ShortUrl shortUrlObj = new ShortUrl();
-            shortUrlObj.setOriginalUrl(originUrl);
-            shortUrlObj.setShortUrl(shortUrl);
-            urlMap.put(shortUrl.replace(domain + "/sol/", ""), shortUrlObj);
-        });
-    }
+
+
 }
