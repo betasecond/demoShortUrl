@@ -25,30 +25,25 @@ package com.example.demo.controller;
             return ResponseEntity.ok(shortUrl);
         }
 
+
         /**
          * 根据短链接获取原始长链接
          * @param shortUrl 短链接
          * @return 原始长链接
          */
-        @GetMapping("/{shortUrl}")
-        public ResponseEntity<String> getOriginalUrl(@PathVariable String shortUrl) {
+        @PostMapping("/{shortUrl}")
+        public ResponseEntity<String> getOriginalUrl(@RequestBody String shortUrl) {
             return shortUrlService.redirectUrl(shortUrl)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         }
+
 
         /**
          * 重定向到原始长链接
          * @param shortUrl 短链接
          * @return 重定向响应
          */
-        @GetMapping("/redirect/{shortUrl}")
-        public ResponseEntity<Object> redirectUrl(@PathVariable String shortUrl) {
-            return shortUrlService.redirectUrl(shortUrl)
-                    .map(url -> ResponseEntity.status(302).header("Location", url).build())
-                    .orElse(ResponseEntity.notFound().build());
-        }
-
         @PostMapping("/redirect")
         public ResponseEntity<Object> redirectUrlPost(@RequestBody String shortUrl) {
             return shortUrlService.redirectUrl(shortUrl)

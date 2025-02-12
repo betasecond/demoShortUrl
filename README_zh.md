@@ -39,9 +39,32 @@ shorturl.domain.prefix=http://yourdomain.com
 ## REST API端点
 
 - `POST /sol/url`：创建短链接
-- `GET /sol/{shortUrl}`：检索原始链接
-- `GET /sol/redirect/{shortUrl}`：重定向到原始链接
+  - **请求体：**
+    ```json
+    {
+      "originalUrl": "http://example.com",
+      "username": "user123",
+      "thirdPartyUserId": "tpUser123",
+      "userAgent": "Mozilla/5.0",
+      "loginMethod": "OAuth"
+    }
+    ```
+
+- `POST /sol/original-url`：使用POST请求检索原始链接，短链接在请求体中
+  - **请求体：**
+    ```json
+    {
+      "shortUrl": "http://short.url/abc123"
+    }
+    ```
+
 - `POST /sol/redirect`：使用POST请求重定向到原始链接，短链接在请求体中
+  - **请求体：**
+    ```json
+    {
+      "shortUrl": "http://short.url/abc123"
+    }
+    ```
 ## 单元测试
 
 提供了单元测试来验证实现。测试使用`originUrl.json`和`result.csv`文件，这些文件可以使用`DemoApplicationTest`类生成。
